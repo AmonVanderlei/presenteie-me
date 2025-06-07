@@ -1,22 +1,13 @@
 import Footer from "@/components/Footer";
-import Link from "next/link";
 import { BsGift } from "react-icons/bs";
 import { FiCheckSquare } from "react-icons/fi";
+import { GrGoogle } from "react-icons/gr";
 
-export default function Home() {
+export default function SignIn() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">
       <header className="w-full flex justify-between items-center mb-10">
-        <Link href="/" className="text-xl tracking-widest font-title">
-          PRESENTEIE-ME
-        </Link>
-        <Link
-          href="/signin"
-          className="border border-golden text-golden px-4 py-1 rounded-full text-sm hover:scale-105 transition-transform duration-200 ease-in-out
-"
-        >
-          Login/Cadastro
-        </Link>
+        <h1 className="text-xl tracking-widest font-title">PRESENTEIE-ME</h1>
       </header>
 
       <main className="max-w-11/12 text-center items-center flex flex-col gap-10 mt-6">
@@ -34,12 +25,10 @@ export default function Home() {
           </p>
         </div>
 
-        <Link
-          href="/signin"
-          className="w-1/2 bg-golden text-white py-3 px-6 rounded-md font-medium my-6 hover:opacity-90 hover:scale-105 transition-transform duration-200 ease-in-out"
-        >
-          Criar minha lista
-        </Link>
+        <button className="flex items-center justify-center gap-3 w-2/3 bg-golden text-white py-3 px-6 rounded-md font-medium my-6 hover:opacity-90 hover:scale-105 transition-transform duration-200 ease-in-out">
+          <GrGoogle />
+          Entrar com Google
+        </button>
 
         <ul className="text-left space-y-4">
           <li className="flex items-center gap-2">

@@ -2,14 +2,18 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Link from "next/link";
-import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 
 export default function MyLists() {
-  const [lists, setLists] = useState([
+  // const [lists, setLists] = useState([
+  //   { id: "1", name: "Aniversário João", date: "20/06/2025" },
+  //   { id: "2", name: "Chá de casa nova", date: "15/07/2025" },
+  // ]);
+
+  const lists = [
     { id: "1", name: "Aniversário João", date: "20/06/2025" },
     { id: "2", name: "Chá de casa nova", date: "15/07/2025" },
-  ]);
+  ];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">

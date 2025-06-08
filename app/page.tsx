@@ -1,11 +1,12 @@
 import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import Link from "next/link";
 
 export default function Main() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">
-      <Header/>
+      <header className="w-full flex justify-center items-center mb-10">
+        <h1 className="text-xl tracking-widest font-title">PRESENTEIE-ME</h1>
+      </header>
 
       <main className="max-w-md w-full text-center flex flex-col gap-10 mt-6">
         <h1 className="text-2xl font-title">O que você deseja fazer?</h1>

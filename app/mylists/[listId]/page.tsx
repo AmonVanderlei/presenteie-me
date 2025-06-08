@@ -37,7 +37,6 @@ export default function ListDetails() {
       </section>
 
       <Copy
-        listId={listId}
         text={`https://presenteie-me.vercel.app/gift?id=${listId}`}
       />
 
@@ -80,21 +79,21 @@ export default function ListDetails() {
       </section>
 
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black opacity-95 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl text-center max-w-xs w-full">
-            <p className="mb-4">Tem certeza que deseja deletar esta lista?</p>
+            <p className="mb-4">Tem certeza que deseja excluir esta lista?</p>
             <div className="flex justify-center gap-4">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm bg-light-gray rounded"
+                className="px-4 py-2 text-sm border border-gray-300 rounded cursor-pointer hover:scale-105 hover:bg-gray-300 transition-all"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 text-sm bg-red-500 text-white rounded"
+                className="px-4 py-2 text-sm bg-red-500 text-white rounded cursor-pointer hover:scale-95 transition-all"
               >
-                Deletar
+                Excluir
               </button>
             </div>
           </div>

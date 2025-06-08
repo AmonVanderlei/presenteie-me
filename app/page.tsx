@@ -1,25 +1,11 @@
 import Footer from "@/components/Footer";
-import Image from "next/image";
+import Header from "@/components/Header";
 import Link from "next/link";
 
 export default function Main() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">
-      <header className="w-full flex justify-between items-center mb-10">
-        <Link href="/" className="text-xl tracking-widest font-title">
-          PRESENTEIE-ME
-        </Link>
-        <div className="flex items-center gap-2">
-          <Image
-            className="bg-black rounded-full w-10 h-10"
-            src="/vercel.svg"
-            width={40}
-            height={40}
-            alt="Profile Picture"
-          />
-          <p className="text-golden text-sm">User Name</p>
-        </div>
-      </header>
+      <Header/>
 
       <main className="max-w-md w-full text-center flex flex-col gap-10 mt-6">
         <h1 className="text-2xl font-title">O que você deseja fazer?</h1>
@@ -41,7 +27,7 @@ export default function Main() {
         </div>
       </main>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }

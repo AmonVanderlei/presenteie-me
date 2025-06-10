@@ -2,42 +2,37 @@
 import Copy from "@/components/Copy";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
-
-type Gift = {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-};
-
-const mockGifts: Gift[] = [
-  { id: 1, name: "Livro", description: "Um bom livro para ler", price: 50 },
-  { id: 2, name: "Camiseta", description: "Estilo e conforto", price: 80 },
-  {
-    id: 3,
-    name: "Fone de ouvido",
-    description: "Música de qualidade",
-    price: 120,
-  },
-];
+import { DataContext } from "@/contexts/dataContext";
+import { useParams } from "next/navigation";
+import Present from "@/types/Present";
 
 export default function GiftListPage() {
-//   const { listCode } = useParams();
-  const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
+  const dataContect = useContext(DataContext);
+  if (!dataContect)
+    throw new Error("DataContext must be used within a DataContextProvider");
+
+  const { publicList, presents, fetchPublicList } = dataContect;
+  const params = useParams();
+  const listCode = params.listCode?.toString();
+  const [selectedPresent, setSelectedPresent] = useState<Present | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
 
-  const openModal = (gift: Gift) => {
-    setSelectedGift(gift);
+  useEffect(() => {
+    if (listCode) fetchPublicList(+listCode);
+  }, [listCode, fetchPublicList]);
+
+  const openModal = (present: Present) => {
+    setSelectedPresent(present);
     setIsOpen(true);
   };
 
   const closeModal = () => {
     setIsOpen(false);
-    setSelectedGift(null);
+    setSelectedPresent(null);
   };
 
   return (
@@ -47,45 +42,66 @@ export default function GiftListPage() {
       </Link>
 
       <div className="my-4">
-        <h1 className="text-2xl font-title text-center mb-8">Nome da Lista</h1>
+        <h1 className="text-2xl font-title text-center mb-8">
+          {publicList?.title}
+        </h1>
 
-        <div className="flex justify-center gap-4 items-center max-w-full overflow-x-clip">
-          {[1, 2, 3].map((i, index) => {
-            const isCenter = index === 1;
-            const rotateClass =
-              index === 0 ? "-rotate-12 translate-12" : index === 2 ? "rotate-12 translate-y-12 -translate-x-12" : "";
+        <div className="flex justify-center gap-4 items-center max-w-screen overflow-x-clip mb-10">
+          {publicList?.photo2 && (
+            <img
+              src={publicList.photo2}
+              width={200}
+              height={200}
+              alt="Foto 1"
+              className="w-36 h-36 z-10 object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300 -rotate-12 translate-12"
+            />
+          )}
 
-            return (
-              <Image
-                key={i}
-                src="/vercel.svg"
-                alt={`Foto ${i}`}
-                className={`${
-                  isCenter ? "w-50 h-50 hover:z-12" : "w-36 h-36 z-10"
-                } object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300 ${rotateClass}`}
-              />
-            );
-          })}
+          {publicList?.photo1 && (
+            <img
+              src={publicList.photo1}
+              width={200}
+              height={200}
+              alt="Foto 2"
+              className="w-50 h-50 hover:z-12 object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300"
+            />
+          )}
+
+          {publicList?.photo3 && (
+            <img
+              src={publicList.photo3}
+              width={200}
+              height={200}
+              alt="Foto 3"
+              className="w-36 h-36 z-10 object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300 rotate-12 translate-y-12 -translate-x-12"
+            />
+          )}
         </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-6 mx-auto">
-        {mockGifts.map((gift) => (
-          <button
-            key={gift.id}
-            onClick={() => openModal(gift)}
-            className="min-w-fit border border-golden rounded-xl py-4 px-8 text-left hover:scale-105 transition-transform"
-          >
-            <h2 className="text-lg font-semibold text-golden">{gift.name}</h2>
-            <p className="text-sm text-gray-600">{gift.description}</p>
-            <p className="mt-1 font-medium">R$ {gift.price}</p>
-          </button>
-        ))}
+        {presents?.length > 0 ? (
+          presents.map((present) => (
+            <button
+              key={present.id}
+              onClick={() => openModal(present)}
+              className="min-w-fit border border-golden rounded-xl py-4 px-8 text-left hover:scale-105 transition-transform"
+            >
+              <h2 className="text-lg font-semibold text-golden">
+                {present.title}
+              </h2>
+              <p className="text-sm text-gray-600">{present.description}</p>
+              <p className="mt-1 font-medium">R$ {present.price}</p>
+            </button>
+          ))
+        ) : (
+          <p className="text-golden font-bold">Não há presentes disponíveis!</p>
+        )}
       </div>
 
       <Footer />
 
-      {isOpen && selectedGift && (
+      {isOpen && selectedPresent && (
         <div className="fixed inset-0 z-50 bg-black opacity-90 flex items-center justify-center px-4">
           <div className="bg-white rounded-xl max-w-sm w-full p-6 relative">
             <button
@@ -96,12 +112,12 @@ export default function GiftListPage() {
             </button>
 
             <h2 className="text-xl font-title mb-4 text-center">
-              {selectedGift.name}
+              {selectedPresent.title}
             </h2>
 
             <p className="text-sm text-gray-700 mb-2 text-center">
-              Envie o valor de <strong>R$ {selectedGift.price}</strong> para a
-              chave Pix:
+              Envie o valor de <strong>R$ {selectedPresent.price}</strong> para
+              a chave Pix:
             </p>
 
             <div className="flex justify-between items-center bg-gray-100 text-black py-2 px-4 rounded-lg text-center mb-4">

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ToastContainer } from "react-toastify";
+import AuthContextProvider from "@/contexts/authContext";
+import DataContextProvider from "@/contexts/dataContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +36,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ToastContainer
+          toastClassName="max-w-[90vw] mt-1 mr-2"
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover={false}
+          theme="dark"
+        />
+        <AuthContextProvider>
+          <DataContextProvider>{children}</DataContextProvider>
+        </AuthContextProvider>
       </body>
     </html>
   );

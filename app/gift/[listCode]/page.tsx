@@ -9,11 +9,11 @@ import { useParams } from "next/navigation";
 import Present from "@/types/Present";
 
 export default function GiftListPage() {
-  const dataContect = useContext(DataContext);
-  if (!dataContect)
+  const dataContext = useContext(DataContext);
+  if (!dataContext)
     throw new Error("DataContext must be used within a DataContextProvider");
 
-  const { publicList, presents, fetchPublicList } = dataContect;
+  const { publicList, presents, fetchPublicList } = dataContext;
   const params = useParams();
   const listCode = params.listCode?.toString();
   const [selectedPresent, setSelectedPresent] = useState<Present | null>(null);

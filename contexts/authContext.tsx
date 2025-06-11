@@ -13,7 +13,7 @@ import { createContext, useEffect, useState } from "react";
 import { languages } from "@/utils/translations";
 
 export interface AuthContextType {
-  user: { uid: string; name: string } | null | undefined;
+  user: { uid: string; name: string; photoURL: string } | null | undefined;
   //   loading: boolean;
   googleLoginHandler: () => Promise<string | null>;
   logout: () => void;
@@ -36,7 +36,9 @@ export default function AuthContextProvider({ children }: Props) {
   }, []);
 
   //   const [user, loading] = useAuthState(auth);
-  const user = { uid: "user1234", name: "Irineu" };
+  const [user, setUser] = useState<
+    { uid: string; name: string; photoURL: string } | null | undefined
+  >(null);
 
   //   const googleProvider = new GoogleAuthProvider();
   //   googleProvider.addScope("profile");
@@ -49,11 +51,13 @@ export default function AuthContextProvider({ children }: Props) {
     // } catch (error) {
     //   return null;
     // }
+    setUser({ uid: "user123", name: "Irineu", photoURL: "/vercel.svg" });
     return null;
   };
 
   const logout = () => {
     // signOut(auth);
+    setUser(null);
   };
 
   const values: AuthContextType = {

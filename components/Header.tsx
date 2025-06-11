@@ -1,9 +1,16 @@
-'use client'
+"use client";
+import { AuthContext } from "@/contexts/authContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 export default function Header() {
+  const authContext = useContext(AuthContext);
+  if (!authContext)
+    throw new Error("AuthContext must be used within a AuthContextProvider");
+
+  const { user, logout } = authContext;
+
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -32,14 +39,16 @@ export default function Header() {
         className="flex items-center gap-2 cursor-pointer relative"
         onClick={() => setShowModal(!showModal)}
       >
-        <Image
-          className="bg-black rounded-full w-10 h-10"
-          src="/vercel.svg"
-          width={40}
-          height={40}
-          alt="Profile Picture"
-        />
-        <p className="text-golden text-sm">User Name</p>
+        {user?.photoURL && (
+          <Image
+            className="bg-black rounded-full w-10 h-10"
+            src={user?.photoURL as string}
+            width={40}
+            height={40}
+            alt="Profile Picture"
+          />
+        )}
+        <p className="text-golden text-sm">{user?.name}</p>
 
         {showModal && (
           <div
@@ -47,7 +56,7 @@ export default function Header() {
             className="absolute top-12 right-0 bg-amber-50 border border-light-gray shadow-md rounded-xl p-4 z-50 w-40"
           >
             <button
-              onClick={() => console.log("Sair")}
+              onClick={() => logout()}
               className="text-sm text-red-600 hover:underline"
             >
               Sair

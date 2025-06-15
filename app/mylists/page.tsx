@@ -5,8 +5,9 @@ import { AuthContext } from "@/contexts/authContext";
 import { DataContext } from "@/contexts/dataContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 export default function MyLists() {
   const authContext = useContext(AuthContext);
@@ -19,15 +20,45 @@ export default function MyLists() {
   if (!dataContext)
     throw new Error("DataContext must be used within a DataContextProvider");
 
-  const { userLists } = dataContext;
+  const { userLists, addObj } = dataContext;
 
   const router = useRouter();
+
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [pix, setPix] = useState("");
+  const [template, setTemplate] = useState("Vazia");
 
   useEffect(() => {
     if (!user) {
       router.push(`/signin`);
     }
   }, [user, router]);
+
+  const handleFormSubmit = () => {
+    if (!title.trim() || !pix.trim() || !eventDate) {
+      toast.warning("Por favor, preencha os campos obrigatórios.");
+      return;
+    }
+
+    const newList = {
+      code: Date.now(),
+      title: title.trim(),
+      date: new Date(eventDate),
+      pix: pix.trim(),
+      uid: user?.uid as string,
+    };
+
+    addObj(newList);
+
+    // (Opcional) adicionar presentes padrão aqui se o template for "Casamento" ou "Aniversário"
+
+    setShowModal(false);
+    setTitle("");
+    setPix("");
+    setTemplate("Vazia");
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">
@@ -37,7 +68,10 @@ export default function MyLists() {
         <div>
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold mb-2">Minhas listas</h2>
-            <button className=" flex items-center gap-2 bg-golden text-white py-2 px-4 rounded-md w-fit hover:scale-105 transition">
+            <button
+              onClick={() => setShowModal(true)}
+              className=" flex items-center gap-2 bg-golden text-white py-2 px-4 rounded-md w-fit hover:scale-105 transition"
+            >
               <FaPlus />
               <p>Nova lista</p>
             </button>
@@ -54,7 +88,7 @@ export default function MyLists() {
                   <Link
                     href={`/mylists/${list.id}`}
                     key={list.id}
-                    className="flex w-full justify-between items-center bg-white p-4 rounded-xl shadow-sm max-w-md"
+                    className="flex justify-between items-center bg-white p-4 gap-2 rounded-xl shadow-sm w-full md:w-md"
                   >
                     <div>
                       <h3 className="text-base font-title">{list.title}</h3>
@@ -76,6 +110,78 @@ export default function MyLists() {
           </ul>
         </div>
       </section>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black opacity-95 z-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">Criar nova lista</h2>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col">
+                <label className="text-sm">Título*</label>
+                <input
+                  type="text"
+                  className="border rounded px-3 py-2"
+                  value={title}
+                  placeholder="Digite o título do evento"
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm">Chave Pix*</label>
+                <input
+                  type="text"
+                  className="border rounded px-3 py-2"
+                  value={pix}
+                  placeholder="Digite sua chave pix"
+                  onChange={(e) => setPix(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm">Data do evento*</label>
+                <input
+                  type="date"
+                  className="border rounded px-3 py-2"
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm">Modelo de lista</label>
+                <select
+                  className="border rounded px-3 py-2"
+                  value={template}
+                  onChange={(e) => setTemplate(e.target.value)}
+                >
+                  <option value="Vazia">Vazia</option>
+                  <option value="Aniversário">Aniversário</option>
+                  <option value="Casamento">Casamento</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-sm px-4 py-2 border rounded hover:bg-gray-100 hover:scale-95 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleFormSubmit}
+                  className="text-sm px-4 py-2 bg-golden text-white rounded hover:scale-105 transition-all"
+                >
+                  Criar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

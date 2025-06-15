@@ -1,14 +1,19 @@
 "use client";
 import Copy from "@/components/Copy";
+import DeleteModal from "@/components/DeleteModal";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import PresentModal from "@/components/PresentModal";
 import { AuthContext } from "@/contexts/authContext";
 import { DataContext } from "@/contexts/dataContext";
+import Gift from "@/types/Gift";
+import Present from "@/types/Present";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { BiLeftArrow } from "react-icons/bi";
 import { IoTrashOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 export default function ListDetails() {
   const authContext = useContext(AuthContext);
@@ -21,12 +26,11 @@ export default function ListDetails() {
   if (!dataContext)
     throw new Error("DataContext must be used within a DataContextProvider");
 
-  const { userLists, gifts, presents } = dataContext;
+  const { userLists, gifts, presents, addObj, updateObj, deleteObj } =
+    dataContext;
 
   const params = useParams();
   const listId = params.listId?.toString();
-
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const router = useRouter();
 
@@ -40,14 +44,83 @@ export default function ListDetails() {
     return userLists.find((list) => list.id === listId);
   }, [userLists, listId]);
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    console.log("Lista deletada:", listId);
+  const filteredPresents = useMemo(() => {
+    return presents?.filter((p) => p.listId === currentList?.id) || [];
+  }, [presents, currentList]);
+
+  const filteredGifts = useMemo(() => {
+    return gifts?.filter((g) => g.listId === currentList?.id) || [];
+  }, [gifts, currentList]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editingPix, setEditingPix] = useState(false);
+  const [pixValue, setPixValue] = useState(currentList?.pix || "");
+  const [showPresentModal, setShowPresentModal] = useState(false);
+  const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
+  const [currentPresent, setCurrentPresent] = useState<{
+    title: string;
+    price: number;
+    description?: string;
+  }>({
+    title: "",
+    price: 0,
+    description: "",
+  });
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handlePixSave = () => {
+    if (currentList) {
+      if (pixValue.trim() !== "") {
+        updateObj({ ...currentList, pix: pixValue });
+        setEditingPix(false);
+      } else {
+        toast.warning("Sua chave pix não pode ser vazia");
+      }
+    }
   };
 
-  if (!currentList) {
-    router.push(`/mylists`);
-  }
+  const handleSavePresent = () => {
+    if (!currentPresent.title.trim()) {
+      toast.warning("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (isEditing) {
+      updateObj(currentPresent);
+    } else {
+      addObj(currentPresent);
+    }
+
+    setShowPresentModal(false);
+  };
+
+  const handleDeletePresent = (present: Present) => {
+    if (window.confirm("Deseja mesmo excluir este presente?")) {
+      deleteObj(present);
+    }
+  };
+
+  const handleListDelete = () => {
+    if (currentList) deleteObj(currentList);
+  };
+
+  const openAddModal = () => {
+    setCurrentPresent({ title: "", price: 0, description: "" });
+    setIsEditing(false);
+    setShowPresentModal(true);
+  };
+
+  const openEditModal = (present: Present) => {
+    setCurrentPresent(present);
+    setIsEditing(true);
+    setShowPresentModal(true);
+  };
+
+  useEffect(() => {
+    if (listId && !currentList) {
+      router.push(`/mylists`);
+    }
+  }, [currentList, listId, router]);
 
   return (
     <div className="min-h-screen px-6 py-6 flex flex-col gap-8 items-center justify-between max-w-xl mx-auto">
@@ -75,63 +148,96 @@ export default function ListDetails() {
       <section className="w-full bg-yellow-50 p-4 rounded-xl shadow">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold mb-2">Chave Pix</h2>
-          <button className="text-sm text-golden underline hover:opacity-80">
-            Editar
-          </button>
+          {editingPix ? (
+            <button
+              className="text-sm text-golden underline"
+              onClick={handlePixSave}
+            >
+              Salvar
+            </button>
+          ) : (
+            <button
+              className="text-sm text-golden underline"
+              onClick={() => setEditingPix(true)}
+            >
+              Editar
+            </button>
+          )}
         </div>
-        <p className="text-sm text-medium-gray">
-          {currentList?.pix ?? "Não chave pix cadastrada!"}
-        </p>
+        {editingPix ? (
+          <input
+            type="text"
+            value={pixValue}
+            onChange={(e) => setPixValue(e.target.value)}
+            className="text-sm w-full mt-2 border rounded p-2"
+          />
+        ) : (
+          <p className="text-sm text-medium-gray">{currentList?.pix}</p>
+        )}
       </section>
 
       <section className="w-full bg-yellow-50 p-4 rounded-xl shadow">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold mb-2">Presentes</h2>
-          <button className="text-sm text-golden underline">
+          <button
+            className="text-sm text-golden underline"
+            onClick={openAddModal}
+          >
             Adicionar presente
           </button>
         </div>
         <ul className="space-y-2">
-          {presents?.map((present, i) => (
+          {filteredPresents.map((present, i) => (
             <li key={i}>
-              <div className="flex justify-between">
-                <span>{present.title}</span>
-                <span>R$ {present.price}</span>
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="block font-medium">{present.title}</span>
+                  <span className="text-xs text-gray-500">
+                    {present.description}
+                  </span>
+                </div>
+                <div className="flex flex-col items-end gap-1 text-sm">
+                  <span>R$ {present.price.toFixed(2)}</span>
+                  <button
+                    className="text-blue-600 underline"
+                    onClick={() => openEditModal(present)}
+                  >
+                    Editar
+                  </button>
+                </div>
               </div>
-              <span className="text-xs text-gray-500">
-                {present.description}
-              </span>
             </li>
-          )) || (
-            <li className="text-sm text-gray-500">
-              Nenhum presente adicionado ainda.
-            </li>
-          )}
+          ))}
         </ul>
       </section>
 
       <section className="w-full bg-yellow-50 p-4 rounded-xl shadow">
         <h2 className="text-lg font-semibold mb-2">Presentes Recebidos</h2>
         <ul className="space-y-2">
-          {gifts?.map((gift, i) => {
-            const present = presents.find((p) => p.id === gift.presentId);
-            return (
-              <li key={i} className="flex justify-between items-center">
-                <div>
-                  <p>{present?.title ?? "Presente desconhecido"}</p>
-                  <p className="text-sm text-gray-500">
-                    Enviado por {gift.sentBy}
-                  </p>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span>R$ {present?.price?.toFixed(2) ?? "--"}</span>
-                  <button className="text-sm text-blue-600 underline mt-1">
-                    Ver comprovante
-                  </button>
-                </div>
-              </li>
-            );
-          }) || (
+          {filteredGifts.length > 0 ? (
+            filteredGifts.map((gift, i) => {
+              const present = presents.find((p) => p.id === gift.presentId);
+              return (
+                <li key={i} className="flex justify-between items-center">
+                  <div>
+                    <p>{present?.title ?? "Presente desconhecido"}</p>
+                    <p className="text-sm text-gray-500">
+                      Enviado por {gift.sentBy}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span>R$ {present?.price?.toFixed(2) ?? "--"}</span>
+                    <button
+                      className="text-sm text-blue-600 underline"
+                      onClick={() => setSelectedGift(gift)}
+                    >
+                      Ver comprovante
+                    </button>
+                  </div>
+                </li>
+              );
+            })
+          ) : (
             <li className="text-sm text-gray-500">
               Nenhum presente recebido ainda.
             </li>
@@ -141,8 +247,8 @@ export default function ListDetails() {
           Total recebido:{" "}
           <span className="text-golden">
             R${" "}
-            {gifts
-              ?.reduce((sum, gift) => {
+            {filteredGifts
+              .reduce((sum, gift) => {
                 const present = presents.find((p) => p.id === gift.presentId);
                 return sum + (present?.price ?? 0);
               }, 0)
@@ -152,22 +258,69 @@ export default function ListDetails() {
       </section>
 
       {showDeleteModal && (
+        <DeleteModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleListDelete}
+          message="Tem certeza que deseja excluir esta lista?"
+        />
+      )}
+
+      {showPresentModal && (
+        <PresentModal
+          isOpen={showPresentModal}
+          onClose={() => setShowPresentModal(false)}
+          onSave={(present) =>
+            isEditing ? updateObj(present) : addObj({ ...present, listId })
+          }
+          onDelete={
+            isEditing
+              ? () => {
+                  deleteObj(currentPresent);
+                  setShowPresentModal(false);
+                }
+              : undefined
+          }
+          present={currentPresent}
+          setPresent={setCurrentPresent}
+          isEditing={isEditing}
+        />
+      )}
+
+      {selectedGift && (
         <div className="fixed inset-0 bg-black opacity-95 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl text-center max-w-xs w-full">
-            <p className="mb-4">Tem certeza que deseja excluir esta lista?</p>
-            <div className="flex justify-center gap-4">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">Detalhes do Presente</h3>
               <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 text-sm border border-gray-300 rounded cursor-pointer hover:scale-105 hover:bg-gray-300 transition-all"
+                onClick={() => setSelectedGift(null)}
+                className="text-blue-600 underline"
               >
-                Cancelar
+                Fechar
               </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 text-sm bg-red-500 text-white rounded cursor-pointer hover:scale-95 transition-all"
-              >
-                Excluir
-              </button>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <p>
+                <strong>Enviado por:</strong> {selectedGift.sentBy}
+              </p>
+              <p>
+                <strong>Enviado em:</strong>{" "}
+                {new Date(selectedGift.sentAt).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedGift.email}
+              </p>
+              <p>
+                <strong>Telefone:</strong> {selectedGift.phone}
+              </p>
+            </div>
+            <div className="w-full flex justify-center">
+              <img
+                src={selectedGift.receipt}
+                alt="Comprovante"
+                className="mt-4 rounded-lg h-96 object-contain"
+              />
             </div>
           </div>
         </div>

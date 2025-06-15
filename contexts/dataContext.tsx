@@ -78,7 +78,7 @@ export default function DataContextProvider({
       const presentsData = FAKEPRESENTS.filter(
         (present) => present.listId === listData?.id
       );
-      
+
       setPresents(presentsData);
       setPublicList(listData);
     } catch (error) {
@@ -88,30 +88,41 @@ export default function DataContextProvider({
     }
   }, []);
 
-  async function addObj(obj: List | Gift) {
+  async function addObj(obj: List | Gift | Present) {
     const newId = Math.random().toString(36).substring(2, 9);
-    if ("title" in obj) {
+    if ("code" in obj) {
       setUserLists((prev) => [...prev, { ...obj, id: newId } as List]);
+    } else if ("title" in obj) {
+      setPresents((prev) => [...prev, { ...obj, id: newId } as Present]);
     } else {
       setGifts((prev) => [...prev, { ...obj, id: newId } as Gift]);
     }
   }
 
-  async function updateObj(obj: List | Gift) {
-    if ("title" in obj)
+  async function updateObj(obj: List | Gift | Present) {
+    if ("code" in obj) {
       setUserLists((prev) =>
         prev.map((item) => (item.id === obj.id ? { ...item, ...obj } : item))
       );
-    else
+    } else if ("title" in obj) {
+      setPresents((prev) =>
+        prev.map((item) => (item.id === obj.id ? { ...item, ...obj } : item))
+      );
+    } else {
       setGifts((prev) =>
         prev.map((item) => (item.id === obj.id ? { ...item, ...obj } : item))
       );
+    }
   }
 
-  async function deleteObj(obj: List | Gift) {
-    if ("title" in obj)
+  async function deleteObj(obj: List | Gift | Present) {
+    if ("code" in obj) {
       setUserLists((prev) => prev.filter((item) => item.id !== obj.id));
-    else setGifts((prev) => prev.filter((item) => item.id !== obj.id));
+    } else if ("title" in obj) {
+      setPresents((prev) => prev.filter((item) => item.id !== obj.id));
+    } else {
+      setGifts((prev) => prev.filter((item) => item.id !== obj.id));
+    }
   }
 
   const value: DataContextType = {

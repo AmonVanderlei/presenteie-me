@@ -22,9 +22,9 @@ export interface DataContextType {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   fetchPublicList: (code: number) => Promise<void>;
-  addObj: (obj: List | Gift) => Promise<void>;
-  updateObj: (obj: List | Gift) => Promise<void>;
-  deleteObj: (obj: List | Gift) => Promise<void>;
+  addObj: (obj: List | Gift | Present) => Promise<void>;
+  updateObj: (obj: List | Gift | Present) => Promise<void>;
+  deleteObj: (obj: List | Gift | Present) => Promise<void>;
 }
 
 export const DataContext = createContext<DataContextType | null>(null);

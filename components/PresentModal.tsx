@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import Modal from "./Modal";
 import DeleteModal from "./DeleteModal";
 import { IoTrashOutline } from "react-icons/io5";
-
-interface Present {
-  title: string;
-  price: number;
-  description?: string;
-  id?: string;
-}
+import Present from "@/types/Present";
 
 interface PresentModalProps {
   isOpen: boolean;
@@ -16,7 +10,7 @@ interface PresentModalProps {
   onSave: (present: Present) => void;
   onDelete?: () => void;
   present: Present;
-  setPresent: (p: Present) => void;
+  setPresent: Dispatch<SetStateAction<Present>>;
   isEditing: boolean;
 }
 

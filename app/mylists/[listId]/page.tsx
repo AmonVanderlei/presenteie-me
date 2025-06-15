@@ -30,7 +30,7 @@ export default function ListDetails() {
     dataContext;
 
   const params = useParams();
-  const listId = params.listId?.toString();
+  const listId = params.listId?.toString() || "";
 
   const router = useRouter();
 
@@ -57,14 +57,11 @@ export default function ListDetails() {
   const [pixValue, setPixValue] = useState(currentList?.pix || "");
   const [showPresentModal, setShowPresentModal] = useState(false);
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
-  const [currentPresent, setCurrentPresent] = useState<{
-    title: string;
-    price: number;
-    description?: string;
-  }>({
+  const [currentPresent, setCurrentPresent] = useState<Present>({
     title: "",
     price: 0,
-    description: "",
+    listId: (currentList?.id as string) ?? "",
+    uid: (user?.uid as string) ?? "",
   });
   const [isEditing, setIsEditing] = useState(false);
 
@@ -84,7 +81,15 @@ export default function ListDetails() {
   };
 
   const openAddModal = () => {
-    setCurrentPresent({ title: "", price: 0, description: "" });
+    if (!currentList || !user) return;
+
+    setCurrentPresent({
+      title: "",
+      price: 0,
+      description: "",
+      listId: currentList.id as string,
+      uid: user.uid,
+    });
     setIsEditing(false);
     setShowPresentModal(true);
   };

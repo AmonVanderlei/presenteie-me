@@ -79,27 +79,6 @@ export default function ListDetails() {
     }
   };
 
-  const handleSavePresent = () => {
-    if (!currentPresent.title.trim()) {
-      toast.warning("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    if (isEditing) {
-      updateObj(currentPresent);
-    } else {
-      addObj(currentPresent);
-    }
-
-    setShowPresentModal(false);
-  };
-
-  const handleDeletePresent = (present: Present) => {
-    if (window.confirm("Deseja mesmo excluir este presente?")) {
-      deleteObj(present);
-    }
-  };
-
   const handleListDelete = () => {
     if (currentList) deleteObj(currentList);
   };

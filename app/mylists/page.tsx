@@ -33,7 +33,7 @@ export default function MyLists() {
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">
       <Header />
 
-      <section className="w-11/12 flex flex-col gap-6">
+      <section className="w-11/12 max-w-md flex flex-col gap-6">
         <div>
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold mb-2">Minhas listas</h2>

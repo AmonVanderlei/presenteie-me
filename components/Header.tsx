@@ -30,7 +30,7 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showModal]);
   return (
-    <header className="w-full flex justify-between items-center mb-10">
+    <header className="w-full max-w-md flex justify-between items-center mb-10">
       <Link href="/" className="text-xl tracking-widest font-title">
         PRESENTEIE-ME
       </Link>

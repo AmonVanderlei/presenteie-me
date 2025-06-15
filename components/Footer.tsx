@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="w-11/12 mt-20 text-sm text-gray-800 flex gap-4 flex-wrap justify-evenly">
+    <footer className="w-11/12 max-w-md mt-20 text-sm text-gray-800 flex gap-4 flex-wrap justify-evenly">
       <a
         className="underline"
         href="https://github.com/AmonVanderlei/presenteie-me"

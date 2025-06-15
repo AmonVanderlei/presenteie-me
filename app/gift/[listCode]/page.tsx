@@ -103,7 +103,7 @@ export default function GiftListPage() {
 
       {isOpen && selectedPresent && (
         <div className="fixed inset-0 z-50 bg-black opacity-90 flex items-center justify-center px-4">
-          <div className="bg-white rounded-xl max-w-sm w-full p-6 relative">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 relative">
             <button
               onClick={closeModal}
               className="absolute top-2 right-4 text-gray-600 hover:text-black text-xl"

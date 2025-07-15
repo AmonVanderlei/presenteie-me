@@ -6,6 +6,6 @@ export default interface Gift {
   email: string;
   phone: string;
   receipt: string;
-  sentAt: number;
+  sentAt: Date;
   uid: string;
 }

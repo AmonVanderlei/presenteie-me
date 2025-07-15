@@ -1,6 +1,5 @@
 "use client";
 import Copy from "@/components/Copy";
-import DeleteModal from "@/components/DeleteModal";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import PresentModal from "@/components/PresentModal";
@@ -52,7 +51,6 @@ export default function ListDetails() {
     return gifts?.filter((g) => g.listId === currentList?.id) || [];
   }, [gifts, currentList]);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingPix, setEditingPix] = useState(false);
   const [pixValue, setPixValue] = useState(currentList?.pix || "");
   const [showPresentModal, setShowPresentModal] = useState(false);
@@ -114,11 +112,20 @@ export default function ListDetails() {
         <Link href="/mylists">
           <BiLeftArrow />
         </Link>
-        <h1 className="text-2xl font-title font-extrabold">
-          {currentList?.title}
-        </h1>
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-title font-extrabold">
+            {currentList?.title}
+          </h1>
+          <p className="text-sm text-medium-gray">
+            {currentList?.date.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        </div>
         <button
-          onClick={() => setShowDeleteModal(true)}
+          onClick={() => handleListDelete()}
           className="flex gap-2 items-center border border-red-500 text-sm text-red-500 px-4 py-2 rounded-full cursor-pointer hover:scale-95 hover:bg-red-500 hover:text-white transition-all"
         >
           <IoTrashOutline className="text-lg" />
@@ -240,15 +247,6 @@ export default function ListDetails() {
           </span>
         </p>
       </section>
-
-      {showDeleteModal && (
-        <DeleteModal
-          isOpen={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={handleListDelete}
-          message="Tem certeza que deseja excluir esta lista?"
-        />
-      )}
 
       {showPresentModal && (
         <PresentModal

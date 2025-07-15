@@ -4,23 +4,27 @@ import {
   useContext,
   useEffect,
   useState,
-  Dispatch,
-  SetStateAction,
   useCallback,
 } from "react";
 import List from "@/types/List";
 import Gift from "@/types/Gift";
 import { AuthContext } from "./authContext";
-import { FAKELISTS, FAKEGIFTS, FAKEPRESENTS } from "@/utils/fakeData";
 import Present from "@/types/Present";
+import {
+  addDocument,
+  deleteDocument,
+  getDocuments,
+  getPublicDocuments,
+  updateDocument,
+} from "@/utils/data";
+import { toast, ToastContentProps } from "react-toastify";
 
 export interface DataContextType {
   userLists: List[];
-  publicList: List | null;
   gifts: Gift[];
   presents: Present[];
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
+  publicList: List | null | undefined;
+  presentsPublicList: Present[];
   fetchPublicList: (code: number) => Promise<void>;
   addObj: (obj: List | Gift | Present) => Promise<void>;
   updateObj: (obj: List | Gift | Present) => Promise<void>;
@@ -38,100 +42,222 @@ export default function DataContextProvider({
   if (!authContext)
     throw new Error("AuthContext must be used within a AuthContextProvider");
 
-  const { user } = authContext;
+  const { user, messages } = authContext;
 
   const [userLists, setUserLists] = useState<List[]>([]);
-  const [publicList, setPublicList] = useState<List | null>(null);
   const [gifts, setGifts] = useState<Gift[]>([]);
   const [presents, setPresents] = useState<Present[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [publicList, setPublicList] = useState<List | null | undefined>(null);
+  const [presentsPublicList, setPresentsPublicList] = useState<Present[]>([]);
 
   const fetchUserData = useCallback(async () => {
     if (!user) return;
     try {
-      setLoading(true);
-
-      const userListsData = FAKELISTS.filter((list) => list.uid === user.uid);
-      const userGiftsData = FAKEGIFTS.filter((gift) => gift.uid === user.uid);
-      const userPresentsData = FAKEPRESENTS.filter(
-        (present) => present.uid === user.uid
-      );
+      const userListsData = (await getDocuments("lists", user.uid)) as List[];
+      const userGiftsData = (await getDocuments("gifts", user.uid)) as Gift[];
+      const userPresentsData = (await getDocuments(
+        "presents",
+        user.uid
+      )) as Present[];
 
       setUserLists(userListsData);
       setGifts(userGiftsData);
       setPresents(userPresentsData);
-    } catch (error) {
-      alert(error);
-    } finally {
-      setLoading(false);
+    } catch {
+      toast.error(messages.error.firebase);
     }
-  }, [user]);
+  }, [user, messages]);
 
   useEffect(() => {
     if (user) fetchUserData();
   }, [user, fetchUserData]);
 
-  const fetchPublicList = useCallback(async (code: number) => {
-    try {
-      setLoading(true);
-      const listData = FAKELISTS.find((list) => list.code === code) || null;
-      const presentsData = FAKEPRESENTS.filter(
-        (present) => present.listId === listData?.id
-      );
+  const fetchPublicList = useCallback(
+    async (code: number) => {
+      try {
+        const { selectedList, listPresents } = await getPublicDocuments(code);
 
-      setPresents(presentsData);
-      setPublicList(listData);
-    } catch (error) {
-      alert(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        setPublicList(selectedList);
+        setPresentsPublicList(listPresents);
+
+        if (!selectedList) {
+          toast.warning("Desculpe! Lista não encontrada.");
+          setPublicList(undefined);
+        }
+      } catch (error) {
+        toast.error(messages.error.firebase + error);
+      }
+    },
+    [messages]
+  );
 
   async function addObj(obj: List | Gift | Present) {
-    const newId = Math.random().toString(36).substring(2, 9);
     if ("code" in obj) {
+      // Add to firebase
+      const newId = await toast.promise(addDocument("lists", obj), {
+        pending: messages.loading.add,
+        success: messages.success.add,
+        error: messages.error.something,
+      });
+
+      // Add locally
       setUserLists((prev) => [...prev, { ...obj, id: newId } as List]);
     } else if ("title" in obj) {
+      // Add to firebase
+      const newId = await toast.promise(addDocument("presents", obj), {
+        pending: messages.loading.add,
+        success: messages.success.add,
+        error: messages.error.something,
+      });
+
+      // Add locally
       setPresents((prev) => [...prev, { ...obj, id: newId } as Present]);
     } else {
+      // Add to firebase
+      const newId = await toast.promise(addDocument("gifts", obj), {
+        pending: messages.loading.add,
+        success: messages.success.add,
+        error: messages.error.something,
+      });
+
+      // Add locally
       setGifts((prev) => [...prev, { ...obj, id: newId } as Gift]);
     }
   }
 
   async function updateObj(obj: List | Gift | Present) {
     if ("code" in obj) {
+      // Update on firebase
+      toast.promise(updateDocument("lists", obj), {
+        pending: messages.loading.update,
+        success: messages.success.update,
+        error: messages.error.something,
+      });
+
+      // Update locally
       setUserLists((prev) =>
         prev.map((item) => (item.id === obj.id ? { ...item, ...obj } : item))
       );
     } else if ("title" in obj) {
+      // Update on firebase
+      toast.promise(updateDocument("presents", obj), {
+        pending: messages.loading.update,
+        success: messages.success.update,
+        error: messages.error.something,
+      });
+
+      // Update locally
       setPresents((prev) =>
         prev.map((item) => (item.id === obj.id ? { ...item, ...obj } : item))
       );
     } else {
+      // Update on firebase
+      toast.promise(updateDocument("gifts", obj), {
+        pending: messages.loading.update,
+        success: messages.success.update,
+        error: messages.error.something,
+      });
+
+      // Update locally
       setGifts((prev) =>
         prev.map((item) => (item.id === obj.id ? { ...item, ...obj } : item))
       );
     }
   }
 
+  function CustomNotification({ closeToast }: ToastContentProps) {
+    return (
+      <div className="flex flex-col gap-2 w-full">
+        {messages.button.confirmation}
+        <div className="flex w-full gap-2">
+          <button
+            className="font-bold rounded-lg bg-slate-500 p-2 text-center w-1/2"
+            onClick={closeToast}
+          >
+            {messages.button.cancel}
+          </button>
+          <button
+            className="font-bold rounded-lg bg-red-500 p-2 text-center w-1/2"
+            onClick={() => closeToast("delete")}
+          >
+            {messages.button.delete}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  async function deleteList(list: List) {
+    const relatedPresents = presents.filter((p) => p.listId === list.id);
+    const relatedGifts = gifts.filter((g) => g.listId === list.id);
+
+    // Delete presents on Firebase
+    await Promise.all(
+      relatedPresents.map((p) => deleteDocument("presents", p.id as string))
+    );
+    // Delete gifts on Firebase
+    await Promise.all(
+      relatedGifts.map((g) => deleteDocument("gifts", g.id as string))
+    );
+
+    // Delete locally
+    setPresents((prev) => prev.filter((p) => p.listId !== list.id));
+    setGifts((prev) => prev.filter((g) => g.listId !== list.id));
+
+    // Delete list on firebase
+    await toast.promise(deleteDocument("lists", list.id as string), {
+      pending: messages.loading.delete,
+      success: messages.success.delete,
+      error: messages.error.something,
+    });
+
+    // Delete locally
+    setUserLists((prev) => prev.filter((item) => item.id !== list.id));
+  }
+
   async function deleteObj(obj: List | Gift | Present) {
-    if ("code" in obj) {
-      setUserLists((prev) => prev.filter((item) => item.id !== obj.id));
-    } else if ("title" in obj) {
-      setPresents((prev) => prev.filter((item) => item.id !== obj.id));
-    } else {
-      setGifts((prev) => prev.filter((item) => item.id !== obj.id));
-    }
+    toast(CustomNotification, {
+      closeButton: false,
+      position: "bottom-center",
+      autoClose: false,
+      draggable: false,
+      onClose(reason) {
+        switch (reason) {
+          case "delete":
+            if ("code" in obj) {
+              deleteList(obj);
+            } else if ("title" in obj) {
+              // Delete on firebase
+              toast.promise(deleteDocument("presents", obj.id as string), {
+                pending: messages.loading.delete,
+                success: messages.success.delete,
+                error: messages.error.something,
+              });
+
+              // Delete locally
+              setPresents((prev) => prev.filter((item) => item.id !== obj.id));
+            } else {
+              // Delete on firebase
+              toast.promise(deleteDocument("gifts", obj.id as string), {
+                pending: messages.loading.delete,
+                success: messages.success.delete,
+                error: messages.error.something,
+              });
+
+              // Delete locally
+              setGifts((prev) => prev.filter((item) => item.id !== obj.id));
+            }
+        }
+      },
+    });
   }
 
   const value: DataContextType = {
     userLists,
-    publicList,
     gifts,
     presents,
-    loading,
-    setLoading,
+    publicList,
+    presentsPublicList,
     fetchPublicList,
     addObj,
     updateObj,

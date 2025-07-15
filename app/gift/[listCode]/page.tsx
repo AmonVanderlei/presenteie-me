@@ -5,15 +5,16 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { DataContext } from "@/contexts/dataContext";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Present from "@/types/Present";
+import { toast } from "react-toastify";
 
 export default function GiftListPage() {
   const dataContext = useContext(DataContext);
   if (!dataContext)
     throw new Error("DataContext must be used within a DataContextProvider");
 
-  const { publicList, presents, fetchPublicList } = dataContext;
+  const { publicList, presentsPublicList, fetchPublicList } = dataContext;
   const params = useParams();
   const listCode = params.listCode?.toString();
   const [selectedPresent, setSelectedPresent] = useState<Present | null>(null);
@@ -21,9 +22,15 @@ export default function GiftListPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
 
+  const router = useRouter();
+
   useEffect(() => {
     if (listCode) fetchPublicList(+listCode);
   }, [listCode, fetchPublicList]);
+
+  useEffect(() => {
+    if (publicList === undefined) router.push("/gift");
+  }, [publicList, router]);
 
   const openModal = (present: Present) => {
     setSelectedPresent(present);
@@ -36,7 +43,7 @@ export default function GiftListPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-6">
+    <div className="min-h-screen flex flex-col justify-between items-center p-6">
       <Link href="/" className="w-full flex justify-center items-center mb-4">
         <h1 className="text-xl tracking-widest font-title">PRESENTEIE-ME</h1>
       </Link>
@@ -80,8 +87,8 @@ export default function GiftListPage() {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-6 mx-auto">
-        {presents?.length > 0 ? (
-          presents.map((present) => (
+        {presentsPublicList?.length > 0 ? (
+          presentsPublicList.map((present) => (
             <button
               key={present.id}
               onClick={() => openModal(present)}
@@ -130,7 +137,7 @@ export default function GiftListPage() {
               onSubmit={(e) => {
                 e.preventDefault();
                 if (!previewUrl) return;
-                alert("Obrigado pelo presente! 🎁");
+                toast.success("Obrigado pelo presente! 🎁");
                 closeModal();
               }}
             >
@@ -144,8 +151,8 @@ export default function GiftListPage() {
                     const file = e.target.files?.[0];
                     if (!file) return;
 
-                    if (file.size > 2 * 1024 * 1024) {
-                      setError("O arquivo deve ter no máximo 5MB.");
+                    if (file.size > 3 * 1024 * 1024) {
+                      setError("O arquivo deve ter no máximo 3MB.");
                       setPreviewUrl(null);
                       return;
                     }
@@ -162,6 +169,8 @@ export default function GiftListPage() {
                 <Image
                   src={previewUrl}
                   alt="Pré-visualização"
+                  width={40}
+                  height={40}
                   className="w-40 h-40 object-cover rounded-lg shadow"
                 />
               )}

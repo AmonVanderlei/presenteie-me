@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { MdSearch } from "react-icons/md";
+import { toast } from "react-toastify";
 
 export default function GiftPage() {
   const [code, setCode] = useState("");
@@ -15,7 +16,7 @@ export default function GiftPage() {
     if (code.trim()) {
       router.push(`/gift/${code.trim()}`);
     } else {
-        alert("Digite um código!")
+        toast.info("Digite um código!")
     }
   };
 

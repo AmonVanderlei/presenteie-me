@@ -1,20 +1,20 @@
 "use client";
 
-import Messages from "@/types/Messages";
 import { createContext, useEffect, useState } from "react";
-// import { auth } from "@/utils/firebase/index";
-// import {
-//   GoogleAuthProvider,
-//   signInWithPopup,
-//   signOut,
-//   User,
-// } from "firebase/auth";
-// import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/utils/firebase/index";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  User,
+} from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { languages } from "@/utils/translations";
+import Messages from "@/types/Messages";
 
 export interface AuthContextType {
-  user: { uid: string; name: string; photoURL: string } | null | undefined;
-  //   loading: boolean;
+  user: User | null | undefined;
+  loading: boolean;
   googleLoginHandler: () => Promise<string | null>;
   logout: () => void;
   messages: Messages;
@@ -27,42 +27,50 @@ interface Props {
 }
 
 export default function AuthContextProvider({ children }: Props) {
+  // const [lang, setLang] = useState<string>("en-us");
   const [messages, setMessages] = useState<Messages>(
-    languages.find((l) => l.lang === "pt-br")!.messages
+    languages.find((l) => l.lang === "en-us")!.messages
   );
 
+  // useEffect(() => {
+  //   const chosenLang = localStorage.getItem("language");
+  //   if (chosenLang) {
+  //     setLang(chosenLang);
+  //   } else {
+  //     localStorage.setItem("language", "en-us");
+  //   }
+  // }, []);
+
   useEffect(() => {
-    setMessages(languages.find((l) => l.lang === "pt-br")!.messages);
+    const lang = "pt-br"
+    const selectedLanguage = languages.find((l) => l.lang === lang);
+    if (selectedLanguage) {
+      setMessages(selectedLanguage.messages);
+    }
   }, []);
 
-  //   const [user, loading] = useAuthState(auth);
-  const [user, setUser] = useState<
-    { uid: string; name: string; photoURL: string } | null | undefined
-  >(null);
+  const [user, loading] = useAuthState(auth);
 
-  //   const googleProvider = new GoogleAuthProvider();
-  //   googleProvider.addScope("profile");
-  //   googleProvider.addScope("email");
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.addScope("profile");
+  googleProvider.addScope("email");
 
   const googleLoginHandler = async () => {
-    // try {
-    //   const result = await signInWithPopup(auth, googleProvider);
-    //   return result.user.uid;
-    // } catch (error) {
-    //   return null;
-    // }
-    setUser({ uid: "user123", name: "Irineu", photoURL: "/vercel.svg" });
-    return null;
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result.user.uid;
+    } catch {
+      return null;
+    }
   };
 
   const logout = () => {
-    // signOut(auth);
-    setUser(null);
+    signOut(auth);
   };
 
   const values: AuthContextType = {
     user,
-    // loading,
+    loading,
     googleLoginHandler,
     logout,
     messages,

@@ -48,7 +48,7 @@ export default function Header() {
             alt="Profile Picture"
           />
         )}
-        <p className="text-golden text-sm">{user?.name}</p>
+        <p className="text-golden text-sm">{user?.displayName}</p>
 
         {showModal && (
           <div
@@ -56,7 +56,7 @@ export default function Header() {
             className="absolute top-12 right-0 bg-amber-50 border border-light-gray shadow-md rounded-xl p-4 z-50 w-40"
           >
             <button
-              onClick={() => logout()}
+              onClick={() => logout()}  
               className="text-sm text-red-600 hover:underline"
             >
               Sair

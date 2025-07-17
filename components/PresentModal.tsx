@@ -71,7 +71,7 @@ export default function PresentModal({
             onChange={(e) =>
               setPresent({
                 ...present,
-                price: parseFloat(e.target.value),
+                price: e.target.value ? parseFloat(e.target.value) : 0,
               })
             }
             className="w-full border p-2 mb-2 rounded"

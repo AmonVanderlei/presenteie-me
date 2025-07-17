@@ -3,24 +3,35 @@ import Footer from "@/components/Footer";
 import { AuthContext } from "@/contexts/authContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { BsGift } from "react-icons/bs";
 import { FiCheckSquare } from "react-icons/fi";
 import { GrGoogle } from "react-icons/gr";
+import { toast } from "react-toastify";
 
 export default function SignIn() {
   const authContext = useContext(AuthContext);
   if (!authContext)
     throw new Error("AuthContext must be used within a AuthContextProvider");
 
-  const { googleLoginHandler } = authContext;
+  const { googleLoginHandler, messages, user } = authContext;
 
   const router = useRouter();
 
-  const loginHandler = () => {
-    googleLoginHandler();
-    router.push("/mylists");
-  };
+  async function handleLogin() {
+    const id = await googleLoginHandler();
+    if (id) {
+      router.push("/mylists");
+    } else {
+      toast.error(messages.error.login);
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+      router.push("/mylists");
+    }
+  }, [user, router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-6">
@@ -45,7 +56,7 @@ export default function SignIn() {
 
         <div className="flex flex-col w-full items-center justify-center gap-2">
           <button
-            onClick={loginHandler}
+            onClick={handleLogin}
             className="flex items-center justify-center gap-3 w-2/3 bg-golden text-white py-3 px-6 rounded-md font-medium mt-6 hover:opacity-90 hover:scale-105 transition-transform duration-200 ease-in-out"
           >
             <GrGoogle />

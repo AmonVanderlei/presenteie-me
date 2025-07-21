@@ -273,6 +273,15 @@ export default function ListDetails() {
         <div className="fixed inset-0 bg-black opacity-95 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={() => {
+                  deleteObj(selectedGift);
+                  setSelectedGift(null)
+                }}
+                className="text-red-600 underline"
+              >
+                <IoTrashOutline className="text-xl" />
+              </button>
               <h3 className="text-lg font-bold">Detalhes do Presente</h3>
               <button
                 onClick={() => setSelectedGift(null)}
@@ -297,11 +306,11 @@ export default function ListDetails() {
                 <strong>Telefone:</strong> {selectedGift.phone}
               </p>
             </div>
-            <div className="w-full flex justify-center">
+            <div className="w-full flex justify-center transition-all hover:scale-150">
               <img
-                src={selectedGift.receipt}
+                src={selectedGift.receiptURL}
                 alt="Comprovante"
-                className="mt-4 rounded-lg h-96 object-contain"
+                className="mt-4 rounded-lg h-96 object-contain transition-all hover:scale-200"
               />
             </div>
           </div>

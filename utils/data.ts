@@ -7,6 +7,7 @@ import {
   updateDoc,
   query,
   where,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "@/utils/firebase/index";
 import Gift from "@/types/Gift";
@@ -54,7 +55,11 @@ export async function getDocuments(
 ): Promise<Gift[] | List[] | Present[]> {
   try {
     const collectionRef = collection(db, col);
-    const q = query(collectionRef, where("uid", "==", uid));
+
+    const q =
+      col === "gifts"
+        ? query(collectionRef, where("uid", "==", uid), orderBy("sentAt", "desc"))
+        : query(collectionRef, where("uid", "==", uid));
 
     const docsSnap = await getDocs(q);
 
@@ -67,7 +72,7 @@ export async function getDocuments(
           sentBy: doc.data().sentBy,
           email: doc.data().email,
           phone: doc.data().phone,
-          receipt: doc.data().receipt,
+          receiptURL: doc.data().receiptURL,
           sentAt: new Date(doc.data().sentAt.toMillis()),
           uid: doc.data().uid,
         } as Gift;

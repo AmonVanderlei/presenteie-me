@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MdContentCopy } from "react-icons/md";
+import { toast } from "react-toastify";
 
 type Props = {
   text: string;
@@ -9,10 +10,30 @@ type Props = {
 export default function Copy({ text, simple }: Props) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+
+        const successful = document.execCommand("copy");
+        if (!successful) throw new Error("Fallback failed");
+
+        document.body.removeChild(textarea);
+      }
+
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Seu navegador não suporta a cópia automática. Copie manualmente.");
+    }
   };
   return (
     <>

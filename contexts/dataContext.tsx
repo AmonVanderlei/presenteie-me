@@ -29,6 +29,7 @@ export interface DataContextType {
   addObj: (obj: List | Gift | Present) => Promise<void>;
   updateObj: (obj: List | Gift | Present) => Promise<void>;
   deleteObj: (obj: List | Gift | Present) => Promise<void>;
+  fileToBase64: (file: File) => Promise<string>;
 }
 
 export const DataContext = createContext<DataContextType | null>(null);
@@ -252,6 +253,15 @@ export default function DataContextProvider({
     });
   }
 
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   const value: DataContextType = {
     userLists,
     gifts,
@@ -262,6 +272,7 @@ export default function DataContextProvider({
     addObj,
     updateObj,
     deleteObj,
+    fileToBase64,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

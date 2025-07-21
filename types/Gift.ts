@@ -5,7 +5,7 @@ export default interface Gift {
   sentBy: string;
   email: string;
   phone: string;
-  receipt: string;
+  receiptURL: string;
   sentAt: Date;
   uid: string;
 }

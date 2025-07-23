@@ -7,7 +7,6 @@ import {
   updateDoc,
   query,
   where,
-  orderBy,
 } from "firebase/firestore";
 import { db } from "@/utils/firebase/index";
 import Gift from "@/types/Gift";
@@ -56,10 +55,7 @@ export async function getDocuments(
   try {
     const collectionRef = collection(db, col);
 
-    const q =
-      col === "gifts"
-        ? query(collectionRef, where("uid", "==", uid), orderBy("sentAt", "desc"))
-        : query(collectionRef, where("uid", "==", uid));
+    const q = query(collectionRef, where("uid", "==", uid));
 
     const docsSnap = await getDocs(q);
 
@@ -113,12 +109,12 @@ export async function getPublicDocuments(code: number): Promise<{
     const q = query(collection(db, "lists"), where("code", "==", code));
     const docsSnap = await getDocs(q);
 
-    const doc = docsSnap.docs[0];
-
     if (docsSnap.empty) {
       throw new Error("Lista não encontrada.");
     }
 
+    const doc = docsSnap.docs[0];
+    
     const selectedList: List = {
       id: doc.id,
       code: +doc.data().code,

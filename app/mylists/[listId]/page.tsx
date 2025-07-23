@@ -276,7 +276,7 @@ export default function ListDetails() {
               <button
                 onClick={() => {
                   deleteObj(selectedGift);
-                  setSelectedGift(null)
+                  setSelectedGift(null);
                 }}
                 className="text-red-600 underline"
               >

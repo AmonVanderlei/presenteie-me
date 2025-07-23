@@ -61,8 +61,12 @@ export default function DataContextProvider({
         user.uid
       )) as Present[];
 
+      const sortedGifts = userGiftsData.sort(
+        (a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
+      );
+
       setUserLists(userListsData);
-      setGifts(userGiftsData);
+      setGifts(sortedGifts);
       setPresents(userPresentsData);
     } catch {
       toast.error(messages.error.firebase);

@@ -47,6 +47,9 @@ export default function MyLists() {
       title: title.trim(),
       date: new Date(eventDate),
       pix: pix.trim(),
+      photo1: "",
+      photo2: "",
+      photo3: "",
       uid: user?.uid as string,
     };
 

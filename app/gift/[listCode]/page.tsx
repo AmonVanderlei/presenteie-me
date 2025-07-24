@@ -6,6 +6,7 @@ import { DataContext } from "@/contexts/dataContext";
 import { useParams, useRouter } from "next/navigation";
 import Present from "@/types/Present";
 import GiftModal from "@/components/GiftModal";
+import Image from "next/image";
 
 export default function GiftListPage() {
   const dataContext = useContext(DataContext);
@@ -40,35 +41,38 @@ export default function GiftListPage() {
           {publicList?.title}
         </h1>
 
-        <div className="flex justify-center gap-4 items-center max-w-screen overflow-x-clip mb-10">
+        <div className="relative flex justify-center items-center gap-4 overflow-x-clip w-screen md:max-w-full mb-10 px-4">
           {publicList?.photo2 && (
-            <img
-              src={publicList.photo2}
-              width={200}
-              height={200}
-              alt="Foto 1"
-              className="w-36 h-36 z-10 object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300 -rotate-12 translate-12"
-            />
+            <div className="relative aspect-square w-36 z-10 rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-500 -rotate-12 translate-12 overflow-hidden">
+              <Image
+                src={publicList.photo2}
+                alt="Foto 1"
+                fill
+                className="object-cover"
+              />
+            </div>
           )}
 
           {publicList?.photo1 && (
-            <img
-              src={publicList.photo1}
-              width={200}
-              height={200}
-              alt="Foto 2"
-              className="w-50 h-50 hover:z-12 object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300"
-            />
+            <div className="relative aspect-square w-48 hover:z-12 rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-500 overflow-hidden">
+              <Image
+                src={publicList.photo1}
+                alt="Foto 2"
+                fill
+                className="object-cover"
+              />
+            </div>
           )}
 
           {publicList?.photo3 && (
-            <img
-              src={publicList.photo3}
-              width={200}
-              height={200}
-              alt="Foto 3"
-              className="w-36 h-36 z-10 object-cover rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-300 rotate-12 translate-y-12 -translate-x-12"
-            />
+            <div className="relative aspect-square w-36 z-10 rounded-xl shadow-md border border-golden hover:scale-125 transition-transform duration-500 rotate-12 translate-y-12 -translate-x-12 overflow-hidden">
+              <Image
+                src={publicList.photo3}
+                alt="Foto 3"
+                fill
+                className="object-cover"
+              />
+            </div>
           )}
         </div>
       </div>

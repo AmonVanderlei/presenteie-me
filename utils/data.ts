@@ -81,6 +81,9 @@ export async function getDocuments(
           title: doc.data().title,
           date: new Date(doc.data().date.toMillis()),
           pix: doc.data().pix,
+          photo1: doc.data().photo1,
+          photo2: doc.data().photo2,
+          photo3: doc.data().photo3,
           uid: doc.data().uid,
         } as List;
       });
@@ -114,13 +117,16 @@ export async function getPublicDocuments(code: number): Promise<{
     }
 
     const doc = docsSnap.docs[0];
-    
+
     const selectedList: List = {
       id: doc.id,
       code: +doc.data().code,
       title: doc.data().title,
       date: new Date(doc.data().date.toMillis()),
       pix: doc.data().pix,
+      photo1: doc.data().photo1,
+      photo2: doc.data().photo2,
+      photo3: doc.data().photo3,
       uid: doc.data().uid,
     };
 

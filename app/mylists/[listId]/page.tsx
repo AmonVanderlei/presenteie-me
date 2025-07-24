@@ -2,11 +2,13 @@
 import Copy from "@/components/Copy";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import Photos from "@/components/Photos";
 import PresentModal from "@/components/PresentModal";
 import { AuthContext } from "@/contexts/authContext";
 import { DataContext } from "@/contexts/dataContext";
 import Gift from "@/types/Gift";
 import Present from "@/types/Present";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -167,6 +169,8 @@ export default function ListDetails() {
         )}
       </section>
 
+      {currentList && <Photos list={currentList} />}
+
       <section className="w-full bg-yellow-50 p-4 rounded-xl shadow">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold mb-2">Presentes</h2>
@@ -307,7 +311,7 @@ export default function ListDetails() {
               </p>
             </div>
             <div className="w-full flex justify-center transition-all hover:scale-150">
-              <img
+              <Image
                 src={selectedGift.receiptURL}
                 alt="Comprovante"
                 className="mt-4 rounded-lg h-96 object-contain transition-all hover:scale-200"

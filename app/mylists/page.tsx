@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { AuthContext } from "@/contexts/authContext";
 import { DataContext } from "@/contexts/dataContext";
+import { LIST_MODELS } from "@/utils/listModels";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
@@ -36,7 +37,7 @@ export default function MyLists() {
     }
   }, [user, router]);
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     if (!title.trim() || !pix.trim() || !eventDate) {
       toast.warning("Por favor, preencha os campos obrigatórios.");
       return;
@@ -53,9 +54,21 @@ export default function MyLists() {
       uid: user?.uid as string,
     };
 
-    addObj(newList);
+    const listId = await addObj(newList);
 
-    // (Opcional) adicionar presentes padrão aqui se o template for "Casamento" ou "Aniversário"
+    const selectedModel = LIST_MODELS.find((l) => l.model === template);
+
+    if (!selectedModel) {
+      toast.error("Modelo de lista inválido.");
+      return;
+    }
+    const listPresents = selectedModel.presents;
+
+    await Promise.all(
+      listPresents.map((present) =>
+        addObj({ ...present, listId: listId, uid: user?.uid as string })
+      )
+    );
 
     setShowModal(false);
     setTitle("");
@@ -161,9 +174,11 @@ export default function MyLists() {
                   value={template}
                   onChange={(e) => setTemplate(e.target.value)}
                 >
-                  <option value="Vazia">Vazia</option>
-                  <option value="Aniversário">Aniversário</option>
-                  <option value="Casamento">Casamento</option>
+                  {LIST_MODELS.map((model) => (
+                    <option key={model.model} value={model.model}>
+                      {model.model}
+                    </option>
+                  ))}
                 </select>
               </div>
 

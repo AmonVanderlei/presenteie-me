@@ -26,7 +26,7 @@ export interface DataContextType {
   publicList: List | null | undefined;
   presentsPublicList: Present[];
   fetchPublicList: (code: number) => Promise<void>;
-  addObj: (obj: List | Gift | Present) => Promise<void>;
+  addObj: (obj: List | Gift | Present) => Promise<string>;
   updateObj: (obj: List | Gift | Present) => Promise<void>;
   deleteObj: (obj: List | Gift | Present) => Promise<void>;
   fileToBase64: (file: File) => Promise<string>;
@@ -107,6 +107,8 @@ export default function DataContextProvider({
 
       // Add locally
       setUserLists((prev) => [...prev, { ...obj, id: newId } as List]);
+
+      return newId;
     } else if ("title" in obj) {
       // Add to firebase
       const newId = await toast.promise(addDocument("presents", obj), {
@@ -117,6 +119,8 @@ export default function DataContextProvider({
 
       // Add locally
       setPresents((prev) => [...prev, { ...obj, id: newId } as Present]);
+
+      return newId;
     } else {
       // Add to firebase
       const newId = await toast.promise(addDocument("gifts", obj), {
@@ -127,6 +131,8 @@ export default function DataContextProvider({
 
       // Add locally
       setGifts((prev) => [...prev, { ...obj, id: newId } as Gift]);
+
+      return newId;
     }
   }
 

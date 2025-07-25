@@ -115,7 +115,7 @@ export default function ListDetails() {
           <BiLeftArrow />
         </Link>
         <div className="flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-title font-extrabold">
+          <h1 className="text-2xl font-title font-extrabold text-center">
             {currentList?.title}
           </h1>
           <p className="text-sm text-medium-gray">

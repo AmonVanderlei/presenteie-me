@@ -86,9 +86,9 @@ export default function GiftListPage() {
                 setSelectedPresent(present);
                 setShowGiftModal(true);
               }}
-              className="w-1/3 md:w-1/4 border border-golden rounded-xl py-4 px-5 text-left hover:scale-105 transition-transform"
+              className="w-4/5 md:w-1/3 xl:w-1/4 border border-golden rounded-xl py-4 px-5 text-left hover:scale-105 transition-transform"
             >
-              <div className="w-full flex flex-col items-center text-xl gap-2">
+              <div className="w-full flex flex-col items-center text-xl gap-2 text-center">
                 <h2 className="text-lg font-bold">{present.title}</h2>
                 <p className="text-sm text-gray-600">{present.description}</p>
               </div>

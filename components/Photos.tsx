@@ -2,13 +2,14 @@
 import { DataContext } from "@/contexts/dataContext";
 import List from "@/types/List";
 import Image from "next/image";
-import { useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 
 interface PhotoProps {
   list: List;
+  setZoomedImage: Dispatch<SetStateAction<string | null>>;
 }
 
-export default function Photos({ list }: PhotoProps) {
+export default function Photos({ list, setZoomedImage }: PhotoProps) {
   const dataContext = useContext(DataContext);
   if (!dataContext)
     throw new Error("DataContext must be used within a DataContextProvider");
@@ -73,15 +74,20 @@ export default function Photos({ list }: PhotoProps) {
       changedPhotos[field] === "" ? list[field] : changedPhotos[field];
     return (
       <div className="bg-gray-300 flex flex-col justify-center items-center p-2 rounded">
-        <p className="font-bold">{label}</p>
+        <p className="font-bold mb-2">{label}</p>
         {current ? (
-          <Image
-            className="w-40 h-40 object-cover rounded"
-            src={current}
-            alt={label}
-            width={160}
-            height={160}
-          />
+          <button
+            onClick={() => setZoomedImage(current)}
+            className="relative aspect-square w-full overflow-hidden rounded cursor-zoom-in"
+          >
+            <Image
+              src={current}
+              alt={label}
+              width={160}
+              height={160}
+              className="object-cover"
+            />
+          </button>
         ) : (
           <div className="w-40 h-40 flex items-center justify-center bg-gray-200 text-gray-500 rounded">
             Sem imagem

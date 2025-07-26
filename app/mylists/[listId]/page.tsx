@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { BiLeftArrow } from "react-icons/bi";
+import { FiDownload } from "react-icons/fi";
 import { IoTrashOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
@@ -64,6 +65,7 @@ export default function ListDetails() {
     uid: (user?.uid as string) ?? "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
   const handlePixSave = () => {
     if (currentList) {
@@ -169,7 +171,9 @@ export default function ListDetails() {
         )}
       </section>
 
-      {currentList && <Photos list={currentList} />}
+      {currentList && (
+        <Photos list={currentList} setZoomedImage={setZoomedImage} />
+      )}
 
       <section className="w-full bg-yellow-50 p-4 rounded-xl shadow">
         <div className="flex justify-between items-center">
@@ -274,7 +278,7 @@ export default function ListDetails() {
       )}
 
       {selectedGift && (
-        <div className="fixed inset-0 bg-black opacity-95 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
               <button
@@ -310,14 +314,46 @@ export default function ListDetails() {
                 <strong>Telefone:</strong> {selectedGift.phone}
               </p>
             </div>
-            <div className="w-full flex justify-center transition-all hover:scale-150">
+            <button
+              onClick={() => setZoomedImage(selectedGift.receiptURL)}
+              className="relative aspect-square w-full rounded-xl shadow-md border-2 border-golden overflow-hidden mt-4 cursor-zoom-in"
+            >
               <Image
                 src={selectedGift.receiptURL}
                 alt="Comprovante"
-                className="mt-4 rounded-lg h-96 object-contain transition-all hover:scale-200"
+                fill
+                className="object-cover"
               />
-            </div>
+            </button>
           </div>
+        </div>
+      )}
+
+      {zoomedImage && (
+        <div
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-[9999]"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div className="relative w-[90vw] h-[90vh] z-10">
+            <Image
+              src={zoomedImage}
+              alt="Comprovante ampliado"
+              fill
+              className="object-contain rounded-xl"
+            />
+          </div>
+
+          <a
+            href={zoomedImage}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute top-4 right-4 z-20 bg-white text-black px-3 py-2 rounded-lg shadow-md hover:bg-neutral-200 transition flex items-center justify-between gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FiDownload />
+            <p>Baixar imagem</p>
+          </a>
         </div>
       )}
 

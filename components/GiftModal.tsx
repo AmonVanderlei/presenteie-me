@@ -45,7 +45,7 @@ export default function GiftModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black opacity-90 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
       <div className="flex flex-col items-center bg-white rounded-xl max-w-md w-full px-4 py-6 relative gap-4">
         <button
           onClick={() => setShowModal(false)}

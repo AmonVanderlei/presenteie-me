@@ -128,7 +128,7 @@ export default function MyLists() {
       </section>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black opacity-95 z-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black z-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
             <h2 className="text-xl font-semibold mb-4">Criar nova lista</h2>
             <div className="flex flex-col gap-3">

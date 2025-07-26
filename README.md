@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1>Presenteie-me 🎁</h1>  
+<h4>Crie listas de desejos personalizadas e compartilhe com quem quiser.</h4>  
 
-## Getting Started
+<p align="center">  
+<image src="public/icons/android-chrome-512x512.png" width="150"/></br>  
+</p>  
 
-First, run the development server:
+<p align="center">  
+<a href="#about-memo">Sobre</a>&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;  
+<a href="#features-sparkles">Funcionalidades</a>&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;  
+<a href="#how-to-contribute-🤔">Como Contribuir</a>&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;  
+<a href="#license-scroll">Licença</a>  
+</p>  
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<p align="center">  
+<img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/AmonVanderlei/presenteie-me" />  
+<img alt="Github License" src="https://img.shields.io/github/license/AmonVanderlei/presenteie-me" />  
+<img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/AmonVanderlei/presenteie-me">  
+<img alt="GitHub Repo Size" src="https://img.shields.io/github/repo-size/AmonVanderlei/presenteie-me" />  
+<img alt="GitHub Issues" src="https://img.shields.io/github/issues/AmonVanderlei/presenteie-me" />  
+<img alt="GitHub Pull Requests" src="https://img.shields.io/github/issues-pr/AmonVanderlei/presenteie-me" />  
+</p>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Sobre :memo:  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Presenteie-me** é um aplicativo para criar, personalizar e compartilhar listas de desejos. Ideal para casamentos, aniversários e outras datas especiais, o app permite que você organize seus presentes ideais e compartilhe com amigos e familiares de forma prática e elegante.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Funcionalidades :sparkles:  
 
-## Learn More
+- Criação de listas de desejos personalizadas com temas e datas.  
+- Compartilhamento por link ou código com qualquer pessoa.  
+- Adição de presentes manuais ou por modelos prontos.  
+- Marcação de presentes comprados pelos convidados.  
+- Visual moderno, responsivo e adaptado para mobile.  
+- Autenticação com Google via Firebase.  
 
-To learn more about Next.js, take a look at the following resources:
+## How to Contribute 🤔
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Fork este repositório;  
+2. Crie uma branch com sua feature: `git checkout -b minha-feature`;  
+3. Commit suas alterações: `git commit -m 'feat: minha nova feature'`;  
+4. Push para sua branch: `git push origin minha-feature`;  
+5. Abra um novo Pull Request.  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## License :scroll:  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+> Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+##### Feito com 💛 por Amon Vanderlei :wave:

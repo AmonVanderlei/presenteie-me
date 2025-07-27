@@ -43,10 +43,12 @@ export default function MyLists() {
       return;
     }
 
+    const [year, month, day] = eventDate.split("-").map(Number);
+
     const newList = {
       code: Date.now(),
       title: title.trim(),
-      date: new Date(eventDate),
+      date: new Date(year, month - 1, day),
       pix: pix.trim(),
       photo1: "",
       photo2: "",
